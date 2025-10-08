@@ -1,41 +1,24 @@
 version: 0.2
-env:
-  variables:
-    ACCOUNT_ID: "905418287014"
-    REGION: "eu-west-2"
-    MAVEN_SETTINGS: settings.xml
+
 phases:
   install:
     runtime-versions:
       java: corretto17
-    commands:
-      - echo "Installing dependencies"
-      - yum update -y || apt-get update -y  # Cross-distro compat
-      - echo "Maven version:" && mvn -v
   pre_build:
     commands:
-      - echo "Logging in to CodeArtifact"
-      - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain nextwork-devops --domain-owner $ACCOUNT_ID --region $REGION --query authorizationToken --output text`
-      - echo "Token exported (partial): $(echo $CODEARTIFACT_AUTH_TOKEN | cut -c1-10)..."
+      - echo Logging in to AWS CodeArtifact...
+      - CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain nextwork-devops --domain-owner 905418287014 --region eu-west-2 --query authorizationToken --output text`
+      - export CODEARTIFACT_AUTH_TOKEN
   build:
     commands:
-      - echo "Building Maven project"
-      - mvn clean package -s $MAVEN_SETTINGS -U -DskipTests -Dmaven.repo.local=/tmp/maven-repo  # Local repo for cache
+      - echo Build started on `date`
+      - mvn clean install -s settings.xml
   post_build:
     commands:
-      - echo "Build artifacts ready"
-      - ls -la target/  # Log WAR presence
+      - echo Build completed on `date`
+      - echo Packaging artifacts...
+      - mvn package -s settings.xml
 artifacts:
   files:
-    - target/nextwork-webapp.war
-    - target/*.jar  # Include any jars if present
-  discard-paths: yes
-cache:
-  paths:
-    - '/root/.m2/**/*'
-    - '/tmp/maven-repo/**/*'  # Speed up subsequent builds
-reports:
-  maven-tests:
-    files:
-      - target/surefire-reports/*.xml
-    base-directory: target/surefire-reports
+    - target/*.war
+  discard-paths: no
