@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<settings
+  xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+          https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+    <server>
+      <id>nextwork-devops-nextwork-devops-maven</id>
+      <username>aws</username>
+      <password>${env.CODEARTIFACT_AUTH_TOKEN}</password>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <id>nextwork-devops-nextwork-devops-maven</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>nextwork-devops-nextwork-devops-maven</id>
+          <url>https://nextwork-devops-905418287014.d.codeartifact.eu-west-2.amazonaws.com/maven/nextwork-devops-maven/</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>nextwork-devops-nextwork-devops-maven</id>
+          <url>https://nextwork-devops-905418287014.d.codeartifact.eu-west-2.amazonaws.com/maven/nextwork-devops-maven/</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+  <mirrors>
+    <mirror>
+      <id>nextwork-devops-nextwork-devops-maven</id>
+      <mirrorOf>*</mirrorOf>
+      <url>https://nextwork-devops-905418287014.d.codeartifact.eu-west-2.amazonaws.com/maven/nextwork-devops-maven/</url>
+    </mirror>
+  </mirrors>
+</settings>
