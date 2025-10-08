@@ -9,16 +9,20 @@ phases:
       - echo Logging in to AWS CodeArtifact...
       - CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain nextwork-devops --domain-owner 905418287014 --region eu-west-2 --query authorizationToken --output text`
       - export CODEARTIFACT_AUTH_TOKEN
+      - echo "Token partial: $(echo $CODEARTIFACT_AUTH_TOKEN | cut -c1-10)..."
   build:
     commands:
       - echo Build started on `date`
-      - mvn clean install -s settings.xml
+      - mvn clean package -s settings.xml -U # Single goal: clean + package (WAR gen); -U forces dep update
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Packaging artifacts...
-      - mvn package -s settings.xml
+      - echo "Target contents:"
+      - ls -la target/
+      - echo "WAR check:"
+      - find . -name "*.war" -o -name "nextwork-web-project.war"
+      - if [ -f target/nextwork-web-project.war ]; then echo "WAR generated successfully!"; else echo "No WAR—check Maven logs"; fi
 artifacts:
   files:
-    - target/*.war
-  discard-paths: no
+    - target/nextwork-web-project.war # Specific match for your POM finalName
+  discard-paths: no # Keeps target/ path in ZIP
